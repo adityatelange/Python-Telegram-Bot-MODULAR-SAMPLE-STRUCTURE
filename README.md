@@ -28,13 +28,20 @@ TOKEN= 'xxxxxxxxx:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'
 OWNER_ID= 000000000
 
 # only for 'prod' MODE
-DOMAIN= 'heroku.com'
+DOMAIN= 'domain.com'
 APP_NAME= 'mybot'
 ```
-so webhook is at `mybot.heroku.com/xxxxxxxxx:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq`
+so webhook is at `mybot.domain.com/xxxxxxxxx:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq`
+
 
 ## Running
 
 ```
 python3 server.py
 ```
+
+
+### note
+
+```.env``` file may or may not work on some platforms, please find your own way for accessing environment variables !
+example : heroku has its own way of implementing env-vars
