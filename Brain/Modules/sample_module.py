@@ -1,5 +1,4 @@
 from telegram import ParseMode
-from telegram import Update, Bot
 from telegram.chataction import ChatAction
 
 from Brain.Modules.strings import *
@@ -12,10 +11,10 @@ sample_module_help = \
 HELPER_SCRIPTS['sample'] = sample_module_help
 
 
-def sample_module(bot: Bot, update: Update, ):
+def sample_module(update, context):
     chat = update.effective_chat
 
-    bot.send_chat_action(chat_id=chat.id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=chat.id, action=ChatAction.TYPING)
     try:
         response = "This is a Sample module"
 

@@ -1,4 +1,7 @@
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 OWNER_ID = os.getenv("OWNER_ID")
 ##################################################

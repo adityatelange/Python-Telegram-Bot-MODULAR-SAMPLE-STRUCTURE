@@ -1,31 +1,30 @@
 import re
-from typing import List
 
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram import Update, Bot
+from telegram.chataction import ChatAction
 from telegram.error import BadRequest
 from telegram.ext.dispatcher import run_async
-from telegram.chataction import ChatAction
+
 from Brain import Utils
-from Brain.Modules.strings import *
-from server import logger
+from Brain.Modules.strings import logger, HELPER_SCRIPTS, HELP_STRINGS
 
 
 @run_async
-def help_button(bot: Bot, update: Update):
+def help_button(update, context):
     query = update.callback_query
     suggestion_match = re.match(r"help_action=(.+?)", query.data)
     back_button = re.match(r"help_back", query.data)
     try:
         if suggestion_match:
             text = query.data.split('=', 1)[1]
-            text = text.split(' ')
-            get_help(bot, update, args=text)
+            context.args = text.split(' ')  # update context.args
+            get_help(update, context)
         elif back_button:
-            get_help(bot, update, args=[])
+            context.args = []
+            get_help(update, context)
 
-        # ensure no spinning white circle
-        bot.answer_callback_query(query.id)
+        # to ensure no spinning white circle
+        context.bot.answer_callback_query(query.id)
         query.message.delete()
     except BadRequest as e:
         if e.message == "Message is not modified":
@@ -42,31 +41,28 @@ def help_button(bot: Bot, update: Update):
 def send_help(update, text, keyboard=None):
     logger.info("into send_help")
     if not keyboard:
-        # add keyboard here
-        # keyboard = None
         pass
     update.effective_message.reply_text(text=text, parse_mode=ParseMode.MARKDOWN, reply_markup=keyboard)
 
 
 @run_async
-def get_help(bot: Bot, update: Update, args: List[str]):
+def get_help(update, context):
     logger.info("into get_help")
     chat = update.effective_chat
 
-    logger.info(args)
-    bot.send_chat_action(chat_id=chat.id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=chat.id, action=ChatAction.TYPING)
+
     # ONLY send help in PM
     if chat.type != chat.PRIVATE:
         send_help(update, "Contact me in PM to get the list of possible commands.", InlineKeyboardMarkup(
-                                                [[InlineKeyboardButton(text="Help",
-                                                                       url="t.me/{}?start=help".format(
-                                                                           bot.username))]]))
+            [[InlineKeyboardButton(text="Help",
+                                   url="t.me/{}?start=help".format(
+                                       context.bot.username))]]))
         return
-    elif len(args) >= 1 and any(args[0].lower() == x for x in HELPER_SCRIPTS):
-        print(args)
-        print(HELPER_SCRIPTS)
-        module = args[0].lower()
-        text = "Here is the available help for the *{}* module:\n{}".format(module,HELPER_SCRIPTS[module])
+    elif len(context.args) >= 1 and any(context.args[0].lower() == x for x in HELPER_SCRIPTS):
+        module = context.args[0].lower()
+        text = "Here is the available help for the *{}* module:\n".format(module) \
+               + HELPER_SCRIPTS[module]
         send_help(update, text, InlineKeyboardMarkup([[InlineKeyboardButton(text="Back", callback_data="help_back")]]))
 
     else:
@@ -80,7 +76,6 @@ def get_help(bot: Bot, update: Update, args: List[str]):
 
         send_help(
             update=update,
-            text=HELP_STRINGS.format(
-                bot.first_name, ),
+            text=HELP_STRINGS,
             keyboard=reply_markup_keyboard
         )
