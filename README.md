@@ -1,5 +1,3 @@
-[![HitCount](http://hits.dwyl.io/AdityaTelange/Python-Telegram-Bot-SAMPLE-STRUCTURE.svg)](http://hits.dwyl.io/AdityaTelange/Python-Telegram-Bot-SAMPLE-STRUCTURE)
-
 # Python-Telegram-Bot [SAMPLE-STRUCTURE]
 
 A sample Structure for creating Telegram Bots in Python3 Using [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
